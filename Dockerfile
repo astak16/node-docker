@@ -4,9 +4,12 @@ ENV MYPATH /root/uccs
 WORKDIR $MYPATH
 ENV SHELL /bin/bash
 
+# 设置终端字体
+ENV LANG C.UTF-8
+
 ADD z /root/.z_jump 
 # RUN  apt-get update && apt-get install -y sudo zsh tree vim exa fzf
-RUN apt-get update && apt-get install -y sudo curl zsh git tree vim exa fzf openssh-server silversearcher-ag fd-find rsync \
+RUN apt-get update && apt-get install -y sudo curl zsh git tree vim exa fzf openssh-server silversearcher-ag fd-find rsync xdg-utils \
     && git config --global init.defaultBranch main \
     && yes | ssh-keygen -t rsa -N '' -f /etc/ssh/ssh_host_rsa_key \
     && ssh-keygen -t dsa -N '' -f /etc/ssh/ssh_host_dsa_key 
@@ -22,13 +25,14 @@ RUN sh -c "$(curl -fsSL https://gitee.com/mirrors/oh-my-zsh/raw/master/tools/ins
 ENV SHELL /bin/zsh
 # end
 
-VOLUME ["/root/.local/share/pnpm"]
-ENV PNPM_HOME /root/.local/share/pnpm \
-    && PATH $PNPM_HOME:$PATH
-RUN npm config set registry=https://registry.npmmirror.com \ 
-    && npm i -g pnpm \ 
+# VOLUME ["/root/.local/share/pnpm"]
+ENV PNPM_HOME /root/.local/share/pnpm
+ENV PATH $PNPM_HOME:$PATH
+RUN npm i -g pnpm \ 
     && pnpm setup \ 
-    && pnpm config set store-dir $PNPM_HOME 
+    && pnpm config set store-dir $PNPM_HOME
+    # 设置淘宝源
+    # npm config set registry=https://registry.npmmirror.com
 
 # dotfiles
 ADD bashrc /root/.bashrc
